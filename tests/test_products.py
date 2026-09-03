@@ -2,15 +2,18 @@ import requests
 import pytest
 
 
-def test_homepage_is_available(base_url):
-    response = requests.get(base_url,timeout=10)
+
+
+def test_homepage_is_available(api_client):
+    response = api_client.get('/')
     assert response.status_code == 200
 
 @pytest.mark.parametrize('keyword',['apple','banana'])
-def test_search_products_returns_results(base_url,keyword):
-    response = requests.get(f"{base_url}/rest/products/search",
+def test_search_products_returns_results(api_client,keyword):
+    response = api_client.get(
+                            "/rest/products/search",
                             params={"q":keyword},
-                            timeout=10)
+                            )
     body = response.json()
 
     assert response.status_code == 200
@@ -26,10 +29,11 @@ def test_search_products_returns_results(base_url,keyword):
         assert keyword in product['name'].lower()
 
 
-def test_search_products_returns_results_empty_list(base_url):
-    response = requests.get(f"{base_url}/rest/products/search",
+def test_search_products_returns_results_empty_list(api_client):
+    response = api_client.get(
+                            "/rest/products/search",
                             params={"q":"appleeeeeeeeeeeeeeeeeeeee"},
-                            timeout=10)
+                            )
     body = response.json()
 
     assert response.status_code == 200
